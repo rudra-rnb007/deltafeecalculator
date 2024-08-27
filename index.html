@@ -360,108 +360,117 @@
 
 <script>
     function calculateAll() {
-        const assetSelect = document.getElementById('asset');
-        const contracts = parseFloat(document.getElementById('contracts').value);
-        const entryPrice = parseFloat(document.getElementById('entry-price').value);
-        const exitPrice = parseFloat(document.getElementById('exit-price').value);
-        const positionType = document.querySelector('input[name="position"]:checked').value;
-        const discount = parseFloat(document.getElementById('discount').value) / 100;
-    
-        // Get the contract value from the selected asset
-        const assetPerContract = parseFloat(assetSelect.options[assetSelect.selectedIndex].getAttribute('data-contract-value'));
-        const usdToInr = 85; // Conversion rate from USD to INR
+    const assetSelect = document.getElementById('asset');
+    const contracts = parseFloat(document.getElementById('contracts').value);
+    const entryPrice = parseFloat(document.getElementById('entry-price').value);
+    const exitPrice = parseFloat(document.getElementById('exit-price').value);
+    const positionType = document.querySelector('input[name="position"]:checked').value;
+    const discount = parseFloat(document.getElementById('discount').value) / 100;
 
-        const takerFeeRate = 0.0005; // 0.05% taker fee
-        const makerFeeRate = 0.0002; // 0.02% maker fee
-        const gstRate = 0.18; // 18% GST
+    // Get the contract value from the selected asset
+    const assetPerContract = parseFloat(assetSelect.options[assetSelect.selectedIndex].getAttribute('data-contract-value'));
+    const usdToInr = 85; // Conversion rate from USD to INR
+
+    // Fee rates
+    const takerFeeRate = 0.0005; // 0.05% taker fee
+    const makerFeeRate = 0.0002; // 0.02% maker fee
+    const gstRate = 0.18; // 18% GST
+
+    // Determine the fee rates based on the selected fee types
+    const buyFeeType = document.getElementById('buy-fee-type').value;
+    const sellFeeType = document.getElementById('sell-fee-type').value;
+
+    const buyFeeRate = buyFeeType === 'taker' ? takerFeeRate : makerFeeRate;
+    const sellFeeRate = sellFeeType === 'taker' ? takerFeeRate : makerFeeRate;
+
+    // Leverage and stop-loss inputs
+    const leverage = parseFloat(document.getElementById('leverage').value);
+    const stopLossPercentage = parseFloat(document.getElementById('stoploss-percentage').value) / 100;
+
+    // Cashflow calculations
+    const buySideCashflow = contracts * assetPerContract * entryPrice;
+    const sellSideCashflow = contracts * assetPerContract * exitPrice;
+
+    const profitBeforeFees = positionType === 'long' ? sellSideCashflow - buySideCashflow : buySideCashflow - sellSideCashflow;
+
+    // Fee calculations
+    const buyFee = buySideCashflow * buyFeeRate * (1 - discount);
+    const gstBuy = buyFee * gstRate;
+
+    const sellFee = sellSideCashflow * sellFeeRate * (1 - discount);
+    const gstSell = sellFee * gstRate;
+
+    const totalFees = buyFee + sellFee + gstBuy + gstSell;
+
+    const netPnl = profitBeforeFees - totalFees;
+
+    // Calculate points to breakeven
+    const pointsToBreakeven = totalFees / (contracts * assetPerContract);
+    const btcPriceToBreakeven = positionType === 'long' ? entryPrice + pointsToBreakeven : entryPrice - pointsToBreakeven;
+
+    // Stop-Loss Calculator
+    const marginTaken = buySideCashflow / leverage;
+    const netLoss = marginTaken * stopLossPercentage;
+
+    const percentageOfChange = (stopLossPercentage / leverage) * 100; // Convert to percentage
+    const pointsLost = entryPrice * (stopLossPercentage / leverage);
     
-        // Leverage and stop-loss inputs
-        const leverage = parseFloat(document.getElementById('leverage').value);
-        const stopLossPercentage = parseFloat(document.getElementById('stoploss-percentage').value) / 100;
-    
-        // Cashflow calculations
-        const buySideCashflow = contracts * assetPerContract * entryPrice;
-        const sellSideCashflow = contracts * assetPerContract * exitPrice;
-    
-        const profitBeforeFees = positionType === 'long' ? sellSideCashflow - buySideCashflow : buySideCashflow - sellSideCashflow;
-    
-        // Fee calculations
-        const takerFeeBuy = buySideCashflow * takerFeeRate * (1 - discount);
-        const gstBuy = takerFeeBuy * gstRate;
-    
-        const takerFeeSell = sellSideCashflow * takerFeeRate * (1 - discount);
-        const gstSell = takerFeeSell * gstRate;
-    
-        const totalFees = takerFeeBuy + takerFeeSell + gstBuy + gstSell;
-    
-        const netPnl = profitBeforeFees - totalFees;
-    
-        // Calculate points to breakeven
-        const pointsToBreakeven = totalFees / (contracts * assetPerContract);
-        const btcPriceToBreakeven = positionType === 'long' ? entryPrice + pointsToBreakeven : entryPrice - pointsToBreakeven;
-    
-        // Stop-Loss Calculator
-        const marginTaken = buySideCashflow / leverage;
-        const netLoss = marginTaken * stopLossPercentage;
-    
-        const percentageOfChange = (stopLossPercentage / leverage) * 100; // Convert to percentage
-        const pointsLost = entryPrice * (stopLossPercentage / leverage);
-        
-        // Adjust calculation for stop-loss limit price based on position type
-        const stoplossLimitPrice = positionType === 'short' 
-            ? entryPrice + pointsLost
-            : entryPrice - pointsLost;
-    
-        // Display results
-        document.getElementById(`${positionType}-buy-cashflow`).textContent = `${buySideCashflow.toFixed(2)} USD (${(buySideCashflow * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-sell-cashflow`).textContent = `${sellSideCashflow.toFixed(2)} USD (${(sellSideCashflow * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-profit-before-fees`).textContent = `${profitBeforeFees.toFixed(2)} USD (${(profitBeforeFees * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-total-fee-buy`).textContent = `${takerFeeBuy.toFixed(2)} USD (${(takerFeeBuy * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-total-fee-sell`).textContent = `${takerFeeSell.toFixed(2)} USD (${(takerFeeSell * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-total-gst-buy`).textContent = `${gstBuy.toFixed(2)} USD (${(gstBuy * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-total-gst-sell`).textContent = `${gstSell.toFixed(2)} USD (${(gstSell * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-total-fees`).textContent = `${totalFees.toFixed(2)} USD (${(totalFees * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-net-pnl`).textContent = `${netPnl.toFixed(2)} USD (${(netPnl * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-points-to-breakeven`).textContent = `${pointsToBreakeven.toFixed(4)}`;
-        document.getElementById(`${positionType}-btc-price-to-breakeven`).textContent = `${btcPriceToBreakeven.toFixed(4)} USD`;
-    
-        // Update the background color based on net PNL for both Net PNL and Unrealized PNL
-        const unrealizedPnlElement = document.getElementById(`${positionType}-profit-before-fees`);
-        const netPnlElement = document.getElementById(`${positionType}-net-pnl`);
-        const tolerance = 0.01; // Small tolerance for floating-point comparison
-    
-        function updateBackgroundColor(element, value) {
-            if (Math.abs(value) < tolerance) {
-                element.style.backgroundColor = '#ffc107'; // Yellow
-            } else if (value > 0) {
-                element.style.backgroundColor = '#28a76e'; // Green
-            } else {
-                element.style.backgroundColor = '#dc3545'; // Red
-            }
+    // Adjust calculation for stop-loss limit price based on position type
+    const stoplossLimitPrice = positionType === 'short' 
+        ? entryPrice + pointsLost
+        : entryPrice - pointsLost;
+
+    // Display results
+    document.getElementById(`${positionType}-buy-cashflow`).textContent = `${buySideCashflow.toFixed(2)} USD (${(buySideCashflow * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-sell-cashflow`).textContent = `${sellSideCashflow.toFixed(2)} USD (${(sellSideCashflow * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-profit-before-fees`).textContent = `${profitBeforeFees.toFixed(2)} USD (${(profitBeforeFees * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-total-fee-buy`).textContent = `${buyFee.toFixed(2)} USD (${(buyFee * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-total-fee-sell`).textContent = `${sellFee.toFixed(2)} USD (${(sellFee * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-total-gst-buy`).textContent = `${gstBuy.toFixed(2)} USD (${(gstBuy * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-total-gst-sell`).textContent = `${gstSell.toFixed(2)} USD (${(gstSell * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-total-fees`).textContent = `${totalFees.toFixed(2)} USD (${(totalFees * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-net-pnl`).textContent = `${netPnl.toFixed(2)} USD (${(netPnl * usdToInr).toFixed(2)} INR)`;
+    document.getElementById(`${positionType}-points-to-breakeven`).textContent = `${pointsToBreakeven.toFixed(4)}`;
+    document.getElementById(`${positionType}-btc-price-to-breakeven`).textContent = `${btcPriceToBreakeven.toFixed(4)} USD`;
+
+    // Update the background color based on net PNL for both Net PNL and Unrealized PNL
+    const unrealizedPnlElement = document.getElementById(`${positionType}-profit-before-fees`);
+    const netPnlElement = document.getElementById(`${positionType}-net-pnl`);
+    const tolerance = 0.01; // Small tolerance for floating-point comparison
+
+    function updateBackgroundColor(element, value) {
+        if (Math.abs(value) < tolerance) {
+            element.style.backgroundColor = '#ffc107'; // Yellow
+        } else if (value > 0) {
+            element.style.backgroundColor = '#28a76e'; // Green
+        } else {
+            element.style.backgroundColor = '#dc3545'; // Red
         }
-    
-        // Update colors for both elements
-        updateBackgroundColor(unrealizedPnlElement, profitBeforeFees);
-        updateBackgroundColor(netPnlElement, netPnl);
-    
-        // Show relevant position
-        document.getElementById('long-position').style.display = positionType === 'long' ? 'block' : 'none';
-        document.getElementById('short-position').style.display = positionType === 'short' ? 'block' : 'none';
-    
-        // Update Stop-Loss Calculator Results
-        document.getElementById('margin-taken').textContent = `${marginTaken.toFixed(2)} USD`;
-        document.getElementById('net-loss').textContent = `${netLoss.toFixed(2)} USD`;
-        document.getElementById('percentage-of-change').textContent = `${percentageOfChange.toFixed(2)}%`;
-        document.getElementById('points-lost').textContent = `${pointsLost.toFixed(2)}`;
-        document.getElementById('stoploss-limit-price').textContent = `${stoplossLimitPrice.toFixed(4)} USD`;
     }
-    
-    // Add event listeners to automatically recalculate stop-loss values
-    document.getElementById('leverage').addEventListener('input', calculateAll);
-    document.getElementById('stoploss-percentage').addEventListener('input', calculateAll);
-    
-    // Initial calculation
-    calculateAll();
+
+    // Update colors for both elements
+    updateBackgroundColor(unrealizedPnlElement, profitBeforeFees);
+    updateBackgroundColor(netPnlElement, netPnl);
+
+    // Show relevant position
+    document.getElementById('long-position').style.display = positionType === 'long' ? 'block' : 'none';
+    document.getElementById('short-position').style.display = positionType === 'short' ? 'block' : 'none';
+
+    // Update Stop-Loss Calculator Results
+    document.getElementById('margin-taken').textContent = `${marginTaken.toFixed(2)} USD`;
+    document.getElementById('net-loss').textContent = `${netLoss.toFixed(2)} USD`;
+    document.getElementById('percentage-of-change').textContent = `${percentageOfChange.toFixed(2)}%`;
+    document.getElementById('points-lost').textContent = `${pointsLost.toFixed(2)}`;
+    document.getElementById('stoploss-limit-price').textContent = `${stoplossLimitPrice.toFixed(4)} USD`;
+}
+
+// Add event listeners to automatically recalculate stop-loss values
+document.getElementById('leverage').addEventListener('input', calculateAll);
+document.getElementById('stoploss-percentage').addEventListener('input', calculateAll);
+
+// Initial calculation
+calculateAll();
+
     </script>
     
 
