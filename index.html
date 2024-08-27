@@ -320,7 +320,7 @@
             <span id="short-points-to-breakeven">0</span>
         </div>
         <div class="result-item total">
-            <span>BTC Price to Breakeven:</span>
+            <span>Price to Breakeven:</span>
             <span id="short-btc-price-to-breakeven">0 USD</span>
         </div>
     </div>
@@ -422,8 +422,8 @@
         document.getElementById(`${positionType}-total-gst-sell`).textContent = `${gstSell.toFixed(2)} USD (${(gstSell * usdToInr).toFixed(2)} INR)`;
         document.getElementById(`${positionType}-total-fees`).textContent = `${totalFees.toFixed(2)} USD (${(totalFees * usdToInr).toFixed(2)} INR)`;
         document.getElementById(`${positionType}-net-pnl`).textContent = `${netPnl.toFixed(2)} USD (${(netPnl * usdToInr).toFixed(2)} INR)`;
-        document.getElementById(`${positionType}-points-to-breakeven`).textContent = `${pointsToBreakeven.toFixed(2)}`;
-        document.getElementById(`${positionType}-btc-price-to-breakeven`).textContent = `${btcPriceToBreakeven.toFixed(2)} USD`;
+        document.getElementById(`${positionType}-points-to-breakeven`).textContent = `${pointsToBreakeven.toFixed(4)}`;
+        document.getElementById(`${positionType}-btc-price-to-breakeven`).textContent = `${btcPriceToBreakeven.toFixed(4)} USD`;
     
         // Update the background color based on net PNL for both Net PNL and Unrealized PNL
         const unrealizedPnlElement = document.getElementById(`${positionType}-profit-before-fees`);
