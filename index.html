@@ -116,7 +116,7 @@
         margin-top: 20px;
         padding: 15px;
         border-radius: 8px;
-        background-color: #f8f9fa;
+        background-color: #dab6bb;
         box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
 
@@ -355,6 +355,14 @@
         <span>Stop-Loss Limit Price:</span>
         <span id="stoploss-limit-price">0 USD</span>
     </div>
+    <div class="result-item">
+        <span>Trading Fee:</span>
+        <span id="trading-fee-at-stoploss">0 USD</span>
+    </div>
+    <div class="result-item">
+        <span>Total Loss with Fee:</span>
+        <span id="total-loss-with-fee">0 USD</span>
+    </div>
 </div>
 
 
@@ -420,6 +428,17 @@
         ? entryPrice + pointsLost
         : entryPrice - pointsLost;
 
+    // Trading Fee at Stop-Loss Limit Price
+    const stopLossCashflow = contracts * assetPerContract * stoplossLimitPrice;
+        const tradingFeeBuyAtStopLoss = stopLossCashflow * buyFeeRate * (1 - discount);
+        const tradingFeeSellAtStopLoss = stopLossCashflow * sellFeeRate * (1 - discount);
+        const totalTradingFeeAtStopLoss = tradingFeeBuyAtStopLoss + tradingFeeSellAtStopLoss;
+        const gstOnTradingFeeAtStopLoss = totalTradingFeeAtStopLoss * gstRate;
+        const totalFeeAtStopLoss = totalTradingFeeAtStopLoss + gstOnTradingFeeAtStopLoss;
+
+    // Total Loss with Fee
+    const totalLossWithFee = netLoss + totalFeeAtStopLoss;
+
     // Display results
     document.getElementById(`${positionType}-buy-cashflow`).textContent = `${buySideCashflow.toFixed(2)} USD (${(buySideCashflow * usdToInr).toFixed(2)} INR)`;
     document.getElementById(`${positionType}-sell-cashflow`).textContent = `${sellSideCashflow.toFixed(2)} USD (${(sellSideCashflow * usdToInr).toFixed(2)} INR)`;
@@ -442,9 +461,9 @@
         if (Math.abs(value) < tolerance) {
             element.style.backgroundColor = '#ffc107'; // Yellow
         } else if (value > 0) {
-            element.style.backgroundColor = '#28a76e'; // Green
+            element.style.backgroundColor = '#095706'; // Green
         } else {
-            element.style.backgroundColor = '#dc3545'; // Red
+            element.style.backgroundColor = '#8c0b0b'; // Red
         }
     }
 
@@ -458,10 +477,25 @@
 
     // Update Stop-Loss Calculator Results
     document.getElementById('margin-taken').textContent = `${marginTaken.toFixed(2)} USD`;
-    document.getElementById('net-loss').textContent = `${netLoss.toFixed(2)} USD`;
+    document.getElementById('net-loss').textContent = `${netLoss.toFixed(2)} USD (${(netLoss* usdToInr).toFixed(2)} INR)`;
     document.getElementById('percentage-of-change').textContent = `${percentageOfChange.toFixed(2)}%`;
     document.getElementById('points-lost').textContent = `${pointsLost.toFixed(2)}`;
     document.getElementById('stoploss-limit-price').textContent = `${stoplossLimitPrice.toFixed(4)} USD`;
+    document.getElementById('trading-fee-at-stoploss').textContent = `${totalFeeAtStopLoss.toFixed(2)} USD (${(totalFeeAtStopLoss * usdToInr).toFixed(2)} INR)`;
+    document.getElementById('total-loss-with-fee').textContent = `${totalLossWithFee.toFixed(2)} USD (${(totalLossWithFee * usdToInr).toFixed(2)} INR)`;
+
+     // Stop-Loss Limit Price with red background and black font color
+    const stopLossLimitPriceElement = document.getElementById('stoploss-limit-price');
+    stopLossLimitPriceElement.textContent = `${stoplossLimitPrice.toFixed(4)} USD`;
+    stopLossLimitPriceElement.style.backgroundColor = 'red';
+    stopLossLimitPriceElement.style.color = 'black';
+
+    // Total Loss with Fee with red background
+    const totalLossWithFeeElement = document.getElementById('total-loss-with-fee');
+    totalLossWithFeeElement.textContent = `${totalLossWithFee.toFixed(2)} USD (${(totalLossWithFee * usdToInr).toFixed(2)} INR)`;
+    totalLossWithFeeElement.style.backgroundColor = 'red';
+    totalLossWithFeeElement.style.color = 'white';
+
 }
 
 // Add event listeners to automatically recalculate stop-loss values
