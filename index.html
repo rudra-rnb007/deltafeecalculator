@@ -17,40 +17,36 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f4f4f4;
-            display: flex;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
             overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 1000px; /* Increased max-width for larger screens */
+            max-width: 1000px;
             margin: 20px;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background: #fff;
-            box-sizing: border-box; /* Ensure padding and borders are included in width and height */
-        }
-        
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            background: #1e1e1e; /* Dark container background */
+            box-sizing: border-box;
         }
 
-        h3 {
+        h2, h3 {
             text-align: center;
-            margin-top: 0;
+            color: #cccccc; /* Darker shade for headings */
         }
 
         .form-group {
-        align-items: center;
-        margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 5px;
+            color: #cccccc; /* Darker shade for labels */
         }
 
         .form-group input,
@@ -58,6 +54,9 @@
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
+            background-color: #2e2e2e; /* Darker input background */
+            color: #e0e0e0; /* Light text color for inputs */
+            border: 1px solid #444444; /* Border for inputs */
         }
 
         .position {
@@ -65,51 +64,52 @@
             padding: 15px;
             margin-top: 20px;
             border-radius: 8px;
-            color: #fff;
+            color: #cccccc; /* Darker shade for text */
             box-sizing: border-box;
         }
 
-
         .position-label {
-    font-weight: bold;
-    margin-right: 20px;
-    display: block;
-}
+            font-weight: bold;
+            margin-right: 20px;
+            display: block;
+            color: #cccccc; /* Darker shade for labels */
+        }
 
-.position-options {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+        .position-options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-.position-options label {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-    font-size: 16px;
-    font-weight: bolder;
-    color: #333;
-    cursor: pointer;
-}
+        .position-options label {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            font-size: 16px;
+            font-weight: bolder;
+            color: #e0e0e0; /* Light text color */
+            cursor: pointer;
+        }
 
-.position-options input[type="radio"] {
-    margin-right: 8px;
-    transform: scale(1.2);
-    cursor: pointer;
-}
+        .position-options input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
 
         .long {
-            background-color: #28a745;
+            background-color: #388e3c; /* Dark green */
         }
 
         .short {
-            background-color: #dc3545;
+            background-color: #d32f2f; /* Dark red */
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            color: #e0e0e0; /* Light text color */
         }
 
         .result-item span {
@@ -124,14 +124,15 @@
 
         .total {
             font-weight: bold;
+            color: #cccccc; /* Darker shade for totals */
         }
 
         button {
             display: block;
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            color: #fff;
+            background-color: #007bff; /* Blue button */
+            color: #cccccc; /* Darker text color */
             border: none;
             border-radius: 5px;
             font-size: 16px;
@@ -139,26 +140,109 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Darker blue on hover */
         }
 
         .stoploss-calculator {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        background-color: #dab6bb;
-        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #424242; /* Dark gray background */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            color: #e0e0e0; /* Light text color */
         }
 
         .stoploss-calculator h3 {
             text-align: center;
             margin-bottom: 15px;
+            color: #cccccc; /* Darker shade for heading */
         }
 
         .stoploss-calculator .form-group {
             margin-bottom: 10px;
         }
 
+        /* Light theme styles */
+
+        body.light-theme {
+    background-color: #f5f5f5; /* Light background */
+    color: #010101; /* Dark text color */
+}
+
+.container.light-theme {
+    background: #ffffff; /* White background for container */
+}
+
+input.light-theme, select.light-theme {
+    background-color: #ffffff; /* White background for inputs */
+    color: #000000; /* Black text color for inputs */
+    border: 1px solid #ccc; /* Light grey border for inputs */
+}
+
+button.light-theme {
+    background-color: #007bff; /* Blue button */
+    color: #ffffff; /* White text color on button */
+}
+
+/* Toggle switch styles */
+
+.theme-switcher {
+    position: absolute;
+    top: 50px;
+    right: 30px;
+}
+
+/* Theme Label Style */
+#theme-label {
+    font-size: 14px; /* Adjust font size as needed */
+    display: flex;
+    margin-top: 5px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
 
         /* Media Queries for responsiveness */
         @media (max-width: 768px) {
@@ -200,6 +284,14 @@
 <div class="container">
     <h2>Delta India Fees Calculator</h2>
     
+    <div class="theme-switcher">
+        <label for="theme-toggle" class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+        <span id="theme-label">Dark Mode</span>
+    </div>
+
     <div class="form-group">
         <label for="asset">Select Asset:</label>
         <select id="asset" onchange="calculateAll()">
@@ -530,7 +622,14 @@
     totalLossWithFeeElement.style.color = 'white';
 
 }
-
+document.getElementById('theme-toggle').addEventListener('change', function() {
+    const isLightTheme = this.checked;
+    document.body.classList.toggle('light-theme', isLightTheme);
+    document.querySelector('.container').classList.toggle('light-theme', isLightTheme);
+    document.querySelectorAll('input, select').forEach(el => el.classList.toggle('light-theme', isLightTheme));
+    document.querySelectorAll('button').forEach(el => el.classList.toggle('light-theme', isLightTheme));
+    document.getElementById('theme-label').textContent = isLightTheme ? 'Light Mode' : 'Dark Mode';
+});
 // Add event listeners to automatically recalculate stop-loss values
 document.getElementById('leverage').addEventListener('input', calculateAll);
 document.getElementById('stoploss-percentage').addEventListener('input', calculateAll);
